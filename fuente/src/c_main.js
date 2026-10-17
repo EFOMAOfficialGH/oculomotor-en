@@ -26,21 +26,33 @@ const T0=15, OBL=0.6, HX=0.15, LIM=50;
 		'Pieza seleccionada':'Selected part','Toca cualquier estructura':'Touch any structure','Gira con un dedo o el ratón, acerca con pellizco o rueda. Toca un músculo, nervio, núcleo o vaso para ver su origen, inserción, inervación y perla clínica.':'Rotate with one finger or the mouse, zoom with a pinch or wheel. Touch a muscle, nerve, nucleus, or vessel to see its origin, insertion, innervation, and clinical pearl.','Aislar':'Isolate','Ocultar':'Hide','Mostrar todo':'Show all','Capas':'Layers','Etiquetas':'Labels','Ninguna':'None','Clave':'Key','Todas':'All','Movimiento':'Movement','ligado al simulador':'linked to simulator','Arrastra para mover la linterna':'Drag to move the light','arrastra la linterna':'drag the light','Cambiar lesión':'Change lesion',
 		'Caso clínico':'Clinical case','Tres pasos de Parks':'Parks three-step test','Algoritmo de diplopía':'Diplopia algorithm','Mis preguntas':'My questions','Explora al paciente':'Explore the patient','arrastra la linterna':'drag the light','Inclinar cabeza':'Tilt head','Recta':'Straight','Fija':'Fixes','No':'No',
 		'Cómo funciona el modelo.':'How the model works.','Modelo didáctico con parámetros aproximados: no reproduce magnitudes de un paciente real.':'Educational model with approximate parameters: it does not reproduce measurements from a real patient.',
-			'Lesión oculta':'Hidden lesion','Sin lesión':'No lesion','Ninguno':'None','Derecho':'Right','Izquierdo':'Left','derecho':'right','izquierdo':'left','der.':'right','izq.':'left','Ojo derecho':'Right eye','Ojo izquierdo':'Left eye','Fuerza de cada músculo':'Strength of each muscle','Pupila III':'CN III pupil','Linterna: al frente':'Light: front','← derecha del paciente':'← patient’s right','izquierda del paciente →':'patient’s left →','al frente':'straight ahead','arriba':'up','abajo':'down','a la derecha':'to the right','a la izquierda':'to the left','Cabeza':'Head','inclinada a la':'tilted to the','cara a la':'face turned to the','Convergencia (objetivo cercano)':'Convergence (near target)','oclusor':'occluder','permiso: se pedirá al activar':'permission: requested when enabled','cámara disponible ✓':'camera available ✓','cámara no disponible aquí ✗':'camera unavailable here ✗'
+			'Lesión oculta':'Hidden lesion','Sin lesión':'No lesion','Ninguno':'None','Derecho':'Right','Izquierdo':'Left','derecho':'right','izquierdo':'left','der.':'right','izq.':'left','Ojo derecho':'Right eye','Ojo izquierdo':'Left eye','Fuerza de cada músculo':'Strength of each muscle','Pupila III':'CN III pupil','Linterna: al frente':'Light: front','← derecha del paciente':'← patient’s right','izquierda del paciente →':'patient’s left →','al frente':'straight ahead','arriba':'up','abajo':'down','a la derecha':'to the right','a la izquierda':'to the left','Cabeza':'Head','inclinada a la':'tilted to the','cara a la':'face turned to the','Convergencia (objetivo cercano)':'Convergence (near target)','oclusor':'occluder','Oclusor':'Occluder','Fija':'Fixes','OD fija':'RE fixes','OI fija':'LE fixes','permiso: se pedirá al activar':'permission: requested when enabled','cámara disponible ✓':'camera available ✓','cámara no disponible aquí ✗':'camera unavailable here ✗','Hay un caso clínico en curso: la lesión está oculta. Explora al paciente aquí o en la pestaña Diagnóstico.':'A clinical case is in progress: the lesion is hidden. Explore the patient here or in the Diagnosis tab.','Lesión actual:':'Current lesion:','Caso aleatorio':'Random case','Casos clínicos':'Clinical cases','preguntas':'questions','Pregunta':'Question','Correcto.':'Correct.','Incorrecto.':'Incorrect.','Abandonar':'Quit','Resultado':'Result','La lesión queda oculta. Lee la viñeta, explora al paciente en el panel de la derecha (mirada, inclinación, oclusor, fijación) y responde paso a paso hasta el diagnóstico topográfico.':'The lesion is hidden. Read the vignette, examine the patient in the right panel (gaze, head tilt, occluder, fixation), and answer step by step until you reach the topographic diagnosis.','Rostro del paciente del caso':'Case patient face','Diplopía percibida':'Perceived diplopia','Arrastra piezas para separarlas':'Drag parts to separate them','Descomponer el modelo':'Explode the model','Arrastra para mover la linterna':'Drag to move the light','Elevador del párpado':'Levator palpebrae','Tróclea':'Trochlea','Anillo de Zinn':'Zinn’s annulus','Nervio óptico':'Optic nerve','División superior':'Superior division','División inferior':'Inferior division','Canal de Dorello':'Dorello’s canal','Carótida interna':'Internal carotid','Núcleo del III':'CN III nucleus','Núcleo del IV':'CN IV nucleus','Núcleo del VI':'CN VI nucleus','Mesencéfalo':'Midbrain','Músculos':'Muscles','Inserción / destino':'Insertion / destination','Inervación':'Innervation','Acción / trayecto':'Action / course'
 		};
 		const L=(es,en)=>language==='en'?en:es;
-	const originalText=new WeakMap(), originalAttr=new WeakMap();
-	let language='es';
-	function translate(root=document){
+		window.oculoTranslate=L;
+		const originalText=new WeakMap(), originalAttr=new WeakMap();
+		let language='es';
+		const footerOriginal=document.querySelector('footer')?.innerHTML||'';
+		function renderFooter(){
+			const f=document.querySelector('footer');if(!f)return;
+			if(language==='es'){if(f.innerHTML!==footerOriginal)f.innerHTML=footerOriginal;return;}
+			f.innerHTML=`<p><b>How the model works.</b> Each eye is a sphere with six muscles. The line of pull of the vertical recti forms 23° with the visual axis, and that of the obliques 51°, so their vertical action depends on the eye’s horizontal position. Position results from the balance between the tension of all muscles and orbital elasticity. The brain calculates the innervation needed by the fixating eye and sends the same signal to the yoke muscles of the other eye (Hering’s law); therefore, when the paretic eye fixates, secondary deviation is greater than primary deviation. The 3D anatomy is modeled from published anatomical measurements (Tillaux spiral, apex, trochlea, and pulley positions); it is schematic, not an image segmentation.</p><p>Face: 3D scan «Infinite» by Lee Perry-Smith, from Infinite Realities (Creative Commons Attribution 3.0), distributed with the three.js examples; the eyelids were opened and eyeballs, eyelashes, and movable eyelids were added.</p><p>Educational model with approximate parameters: it does not reproduce measurements from a real patient. References: Leigh RJ, Zee DS. <em>The Neurology of Eye Movements</em>, 5th ed.; Brazis PW, Masdeu JC, Biller J. <em>Localization in Clinical Neurology</em>; von Noorden GK, Campos EC. <em>Binocular Vision and Ocular Motility</em>; Demer JL. The orbital pulley system: a revolution in concepts of orbital anatomy. <em>Ann N Y Acad Sci</em> 2002;956:17–32.</p>`;
+		}
+		function translate(root=document){
 		const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
 		while(n=walker.nextNode()){
 			if(!originalText.has(n))originalText.set(n,n.nodeValue);
 			const base=originalText.get(n).trim(); if(!base)continue;
-			const value=language==='en'?(I18N[base]||base):base;
+				let value=base;
+				if(language==='en'){
+					value=I18N[base]||base;
+					if(value===base)for(const [es,en] of Object.entries(I18N).sort((a,b)=>b[0].length-a[0].length))if(es.length>2)value=value.split(es).join(en);
+				}
 			if(n.nodeValue.trim()!==value)n.nodeValue=n.nodeValue.replace(n.nodeValue.trim(),value);
 		}
 		root.querySelectorAll?.('[aria-label],[title]').forEach(el=>{for(const a of ['aria-label','title']){if(!el.hasAttribute(a))continue;if(!originalAttr.has(el))originalAttr.set(el,{...(originalAttr.get(el)||{}),[a]:el.getAttribute(a)});const base=originalAttr.get(el)[a];el.setAttribute(a,language==='en'?(I18N[base]||base):base);}});
-		document.documentElement.lang=language;
+			document.documentElement.lang=language;
+			renderFooter();
 	}
 		function setLanguage(next){
 			language=next==='en'?'en':'es';
@@ -49,8 +61,13 @@ const T0=15, OBL=0.6, HX=0.15, LIM=50;
 			({CASES,TREE,INFO}=data);
 			if(window.EOM)window.EOM.INFO=INFO;
 			translate();
-			if(typeof buildEyeCtl==='function'){buildEyeCtl('R');buildEyeCtl('L');applyAll();syncCtl();syncSegs();changed();}
+			if(typeof buildEyeCtl==='function'){
+				buildEyeCtl('R');buildEyeCtl('L');
+				const syn=$('synSel');if(syn)syn.innerHTML=Object.entries(synLabels()).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+				applyAll();syncCtl();syncSegs();changed();
+			}
 			if(typeof renderDx==='function')renderDx();
+			translate();
 		}
 		try{language=localStorage.getItem('oculo-language')==='en'?'en':'es';}catch(e){}
 		if(language==='en'&&window.OCU_DATA_EN)({CASES,TREE,INFO}=window.OCU_DATA_EN);
@@ -147,6 +164,12 @@ const SYN={
   OAH:{label:'Uno y medio',f:(ip,co,s)=>{weaken(ip,['LR'],s);ip.ino=s;co.ino=s;}},
   WEB:{label:'Weber (mesencéfalo ventral)',f:(ip,co,s)=>weaken(ip,III_ALL,s)}
 };
+const LES_EN={
+  normal:{label:'No lesion',short:'No lesion'}, III:{label:'Complete CN III palsy (pupil involved)',short:'Complete CN III'}, IIIps:{label:'CN III palsy with pupil sparing',short:'CN III pupil-sparing'}, IIIsup:{label:'CN III · superior division',short:'CN III superior division'}, IIIinf:{label:'CN III · inferior division',short:'CN III inferior division'}, IV:{label:'CN IV trochlear palsy',short:'CN IV'}, VI:{label:'CN VI abducens palsy',short:'CN VI'}, INO:{label:'Internuclear ophthalmoplegia (MLF)',short:'INO'}, HOR:{label:'Horner syndrome (contrast)',short:'Horner'}, manual:{label:'Manual adjustment',short:'manual adjustment'}
+};
+const SYN_EN={none:{label:'None'},CS:{label:'Cavernous sinus'},APEX:{label:'Orbital apex'},VI2:{label:'Bilateral CN VI palsy (intracranial hypertension)'},IV2:{label:'Bilateral CN IV palsy (traumatic)'},N3:{label:'Nuclear CN III palsy'},OAH:{label:'One-and-a-half syndrome'},WEB:{label:'Weber syndrome (ventral midbrain)'}};
+const labels=()=>language==='en'?LES_EN:LES;
+const synLabels=()=>language==='en'?SYN_EN:SYN;
 const S={
   E:{R:{...NORMAL},L:{...NORMAL}},
   les:{R:'VI',L:'normal'}, sev:{R:100,L:100}, syn:{k:'none',side:'R',sev:100},
@@ -168,10 +191,10 @@ function fixEye(){return S.cover?other(S.cover):S.fix;}
 const sideName=s=>s==='R'?L('derecho','right'):L('izquierdo','left');
 const sideShort=s=>s==='R'?L('der.','right'):L('izq.','left');
 function describeLesion(){
-  if(S.hidden)return 'Lesión oculta';
-  if(S.syn.k!=='none')return SYN[S.syn.k].label+(['VI2','IV2'].includes(S.syn.k)?'':' '+sideShort(S.syn.side));
-  const a=[];for(const s of ['R','L']){const k=S.les[s];if(k!=='normal')a.push(LES[k].short+' '+sideShort(s)+(S.sev[s]<100&&k!=='manual'?` (${S.sev[s]} %)`:''));}
-  return a.length?a.join(' + '):'Sin lesión';
+  if(S.hidden)return L('Lesión oculta','Hidden lesion');
+  if(S.syn.k!=='none')return synLabels()[S.syn.k].label+(['VI2','IV2'].includes(S.syn.k)?'':' '+sideShort(S.syn.side));
+  const a=[];for(const s of ['R','L']){const k=S.les[s];if(k!=='normal')a.push(labels()[k].short+' '+sideShort(s)+(S.sev[s]<100&&k!=='manual'?` (${S.sev[s]} %)`:''));}
+  return a.length?a.join(' + '):L('Sin lesión','No lesion');
 }
 function lesionSites(eye){
   const out=new Set(); let aneur=false;
@@ -398,7 +421,7 @@ function drawNine(cv){
     drawEye(ctx,'L',ox+R*1.85,oy,R,r.L.p,S.E.L,{reflex:true,lift:true,simple:true});}
     const parts=devLabel(dv);
     ctx.font=`600 ${Math.max(9.5,Math.min(12,cw/13))}px JetBrains Mono, monospace`; ctx.textAlign='center';
-    ctx.fillStyle=parts.length?C.bad:C.muted; ctx.fillText(parts.length?parts.join(' · '):'orto',ox,row*ch+ch*0.9);
+    ctx.fillStyle=parts.length?C.bad:C.muted; ctx.fillText(parts.length?parts.join(' · '):L('orto','ortho'),ox,row*ch+ch*0.9);
     ctx.strokeStyle=C.line; ctx.lineWidth=1;
     if(col<2){ctx.beginPath();ctx.moveTo((col+1)*cw,row*ch+6);ctx.lineTo((col+1)*cw,row*ch+ch-6);ctx.stroke();}
     if(row<2){ctx.beginPath();ctx.moveTo(col*cw+6,(row+1)*ch);ctx.lineTo(col*cw+cw-6,(row+1)*ch);ctx.stroke();}
@@ -408,12 +431,12 @@ function drawNine(cv){
 /* patient view */
 function diplopiaText(dv){
   const msg=[]; const e=dv.eso, v=dv.rht;
-  if(S.cover)return `Con ${S.cover==='R'?'OD':'OI'} tapado el paciente ve una sola imagen: la diplopía binocular desaparece al ocluir un ojo.`;
-  if(Math.abs(e)>=1.5)msg.push(e>0?`Diplopía horizontal <b>no cruzada</b> (homónima): cada imagen queda del lado de su ojo. Separación ${Math.round(PD(e))}Δ.`:`Diplopía horizontal <b>cruzada</b> (heterónima): cada imagen queda del lado opuesto a su ojo. Separación ${Math.round(PD(e))}Δ.`);
-  if(Math.abs(v)>=1)msg.push(`Diplopía vertical: la imagen más baja pertenece al ojo más alto (${v>0?'OD':'OI'}).`);
+  if(S.cover)return language==='en'?`With ${S.cover==='R'?'RE':'LE'} covered, the patient sees a single image: binocular diplopia disappears when one eye is occluded.`:`Con ${S.cover==='R'?'OD':'OI'} tapado el paciente ve una sola imagen: la diplopía binocular desaparece al ocluir un ojo.`;
+  if(Math.abs(e)>=1.5)msg.push(language==='en'?(e>0?`Horizontal <b>uncrossed</b> diplopia (homonymous): each image remains on the side of its eye. Separation ${Math.round(PD(e))}Δ.`:`Horizontal <b>crossed</b> diplopia (heteronymous): each image lies on the opposite side from its eye. Separation ${Math.round(PD(e))}Δ.`):(e>0?`Diplopía horizontal <b>no cruzada</b> (homónima): cada imagen queda del lado de su ojo. Separación ${Math.round(PD(e))}Δ.`:`Diplopía horizontal <b>cruzada</b> (heterónima): cada imagen queda del lado opuesto a su ojo. Separación ${Math.round(PD(e))}Δ.`));
+  if(Math.abs(v)>=1)msg.push(language==='en'?`Vertical diplopia: the lower image belongs to the higher eye (${v>0?'RE':'LE'}).`:`Diplopía vertical: la imagen más baja pertenece al ojo más alto (${v>0?'OD':'OI'}).`);
   const tt=Math.abs(dv.extR)>Math.abs(dv.extL)?{s:'OD',t:dv.extR}:{s:'OI',t:dv.extL};
   if(Math.abs(tt.t)>=2)msg.push(`${tt.s} en ${tt.t>0?'extorsión':'intorsión'} de ${Math.abs(tt.t).toFixed(0)}°: su imagen se ve inclinada.`);
-  return msg.length?msg.join(' '):'Visión única: ambas imágenes caen en la fóvea.';
+  return msg.length?msg.join(' '):L('Visión única: ambas imágenes caen en la fóvea.','Single vision: both images fall on the fovea.');
 }
 function drawPatient(cv,dv){
   const {w,h,d}=fit(cv); const ctx=cv.getContext('2d'); ctx.setTransform(d,0,0,d,0,0);
@@ -432,7 +455,7 @@ function drawPatient(cv,dv){
     const col=side==='R'?'#FF5A4A':'#F4F2EA';
     ctx.shadowColor=col; ctx.shadowBlur=14; ctx.fillStyle=col; ctx.globalAlpha=0.88; ctx.fillRect(-3.5,-lenH/2,7,lenH); ctx.restore();
     ctx.fillStyle=side==='R'?'#FF8A7E':C['screen-ink']; ctx.font='600 11px Archivo, sans-serif'; ctx.textAlign='center';
-    ctx.fillText(side==='R'?'OD':'OI',x,y+lenH/2+14);
+    ctx.fillText(side==='R'?L('OD','RE'):L('OI','LE'),x,y+lenH/2+14);
   }
   ctx.fillStyle=C['screen-ink']; ctx.textAlign='left'; ctx.font='500 11px Archivo, sans-serif'; ctx.fillText('Mira: '+fmtGaze(S.gaze.x,S.gaze.y),10,h-10);
 }
@@ -472,29 +495,51 @@ const CLIN={
   OAH:{t:'Síndrome del uno y medio',p:['Lesión del núcleo del VI o la FRPP más el FLM del mismo lado. Hacia el lado de la lesión no se mueve ningún ojo; hacia el otro solo abduce el ojo contralateral, con nistagmo. La convergencia se conserva.','Causas: esclerosis múltiple, infarto o tumor de la protuberancia.']},
   WEB:{t:'Síndrome de Weber',p:['Lesión del mesencéfalo ventral: fascículo del III y pedúnculo cerebral. III ipsilateral con hemiparesia contralateral. Si afecta el núcleo rojo con temblor contralateral, es síndrome de Benedikt.']}
 };
+const CLIN_EN={
+  III:{t:'Complete oculomotor (III) nerve palsy',p:['Eye down and out: the lateral rectus (VI) and superior oblique (IV) act unopposed. Complete ptosis from loss of the levator palpebrae. Unreactive mydriasis and loss of accommodation due to injury of parasympathetic fibers.','With pupil involvement, think first of compression: posterior communicating artery aneurysm or uncal herniation. Requires urgent CT angiography (CTA) or MR angiography (MRA).']},
+  IIIps:{t:'III nerve palsy with pupil sparing',p:['Same ophthalmoplegia and ptosis, with a normal pupil. Pupillomotor fibers run on the periphery of the nerve, supplied by pial vessels; microvascular ischemia injures the central fibers.','Typical of diabetes and hypertension; usually recovers in 8 to 12 weeks. Monitor the pupil during the first few days.']},
+  IIIsup:{t:'III nerve · superior division',p:['Ptosis and limitation of elevation (superior rectus). The III nerve divides in the anterior cavernous sinus or the superior orbital fissure, so a divisional lesion localizes to that region.']},
+  IIIinf:{t:'III nerve · inferior division',p:['Exotropia with limitation of adduction and depression, and mydriasis. The eyelid is preserved because the levator is supplied by the superior division.']},
+  IV:{t:'IV nerve (trochlear)',p:['Hypertropia of the affected eye that increases on contralateral gaze, on downgaze and when tilting the head toward the side of the lesion (Bielschowsky). Extorsion of the affected eye.','Compensatory posture: head tilted toward the healthy side, chin down. Trauma is the most common acquired cause. Because the trochlear nerve decussates completely, a nuclear lesion affects the contralateral eye.']},
+  VI:{t:'VI nerve (abducens)',p:['Esotropia with limitation of abduction. Uncrossed horizontal diplopia that worsens at distance and when looking toward the affected side. Compensatory posture: face turned toward the affected side.','Causes: microvascular ischemia, intracranial hypertension (a false localizing sign due to Dorello\'s canal), clival or cerebellopontine angle tumors, Wernicke encephalopathy.']},
+  INO:{t:'Internuclear ophthalmoplegia (MLF)',p:['Lesion of the medial longitudinal fasciculus on the side of the eye that does not adduct. On lateral gaze that eye is limited in adduction and the contralateral eye shows abducting nystagmus. Convergence is preserved: test it with the Convergence button.','Bilateral in a young person: multiple sclerosis. Unilateral in an older adult: brainstem infarct.']},
+  HOR:{t:'Horner syndrome (contrast)',p:['This is not a cranial nerve lesion: it is the sympathetic pathway. Mild ptosis of 1 to 2 mm (Müller\'s muscle), miosis and variable anhidrosis; anisocoria increases in the dark. Ocular motility normal.']},
+  manual:{t:'Manual adjustment',p:['Each control represents muscle strength (100% = normal). Use to test partial pareses or combinations.']},
+  CS:{t:'Cavernous sinus syndrome',p:['Affects III, IV, VI, V1 (and V2) and the pericarotid sympathetic: painful ophthalmoplegia with a mid-dilated unreactive pupil and facial hypoesthesia. The VI runs inside the sinus, next to the carotid; the others lie in the lateral wall.','Causes: carotid-cavernous fistula, septic thrombosis, cavernous aneurysm, tumors (meningioma, pituitary adenoma, metastases) and Tolosa-Hunt syndrome.']},
+  APEX:{t:'Orbital apex syndrome',p:['Ophthalmoplegia of III, IV and VI with V1 and, additionally, optic neuropathy: visual loss and a relative afferent pupillary defect. If CN II is not affected it is called superior orbital fissure syndrome.','Causes: orbital inflammation, mucormycosis and aspergillosis in diabetics, tumors and trauma.']},
+  VI2:{t:'Bilateral VI palsy',p:['Esotropia that increases on gaze to both sides. In intracranial hypertension the VI is stretched in Dorello\'s canal: a false localizing sign. Examine the fundus.']},
+  IV2:{t:'Bilateral IV palsy',p:['Alternating hypertropia: right on left gaze and left on right gaze, with Bielschowsky positive on both sides. There is often esotropia in primary gaze and large extorsion (>10°). Typical of severe cranial trauma.']},
+  N3:{t:'Nuclear III lesion',p:['The superior rectus subnucleus innervates the contralateral SR and the single central caudal nucleus innervates both levators: a nuclear lesion causes bilateral ptosis and weakness of both superior recti, in addition to ipsilateral III palsy.','Causes: paramedian mesencephalic infarcts (Artery of Percheron), tumors, demyelination.']},
+  OAH:{t:'One-and-a-half syndrome',p:['Lesion of the VI nucleus or the PPRF plus the MLF on the same side. Toward the side of the lesion neither eye moves; toward the other side only the contralateral eye abducts, with nystagmus. Convergence is preserved.','Causes: multiple sclerosis, pontine infarct or tumor.']},
+  WEB:{t:'Weber syndrome',p:['Lesion of the ventral midbrain affecting the III fascicle and the cerebral peduncle. Ipsilateral III palsy with contralateral hemiparesis. If the red nucleus is involved with contralateral tremor, it is Benedikt syndrome.']}
+};
+
+const MNAME_EN={SR:'Superior rectus',IR:'Inferior rectus',SO:'Superior oblique',IO:'Inferior oblique'};
+const clinical=()=>language==='en'?CLIN_EN:CLIN;
 function updateClin(){
   const el=$('clin'), f=$('findings');
-  if(S.hidden){el.innerHTML='<p>Caso en curso: la interpretación se muestra al terminar el caso.</p>';f.innerHTML='';return;}
+  if(S.hidden){el.innerHTML='<p>'+L('Caso en curso: la interpretación se muestra al terminar el caso.','Case in progress: interpretation will be shown when the case ends.')+'</p>';f.innerHTML='';return;}
   const html=[];
-  if(S.syn.k!=='none'){const c=CLIN[S.syn.k];html.push(`<h3>${c.t}${['VI2','IV2'].includes(S.syn.k)?'':' · lado '+sideName(S.syn.side)}${S.syn.sev<100?` · ${S.syn.sev} %`:''}</h3>`+c.p.map(x=>`<p>${x}</p>`).join(''));}
-  else for(const s of ['R','L']){const k=S.les[s];if(k==='normal')continue;const c=CLIN[k];
-    html.push(`<h3>${c.t} · ojo ${sideName(s)}${S.sev[s]<100&&k!=='manual'?` · paresia ${S.sev[s]} %`:''}</h3>`+c.p.map(x=>`<p>${x}</p>`).join(''));}
-  el.innerHTML=html.length?html.join(''):'<p>Ambos ojos sanos. Elige una lesión o un síndrome en el panel de la izquierda.</p>';
+  if(S.syn.k!=='none'){const c=clinical()[S.syn.k];html.push(`<h3>${c.t}${['VI2','IV2'].includes(S.syn.k)?'':' · '+L('lado ','side ')+sideName(S.syn.side)}${S.syn.sev<100?` · ${S.syn.sev} %`:''}</h3>`+c.p.map(x=>`<p>${x}</p>`).join(''));}
+  else for(const s of ['R','L']){const k=S.les[s];if(k==='normal')continue;const c=clinical()[k];
+    html.push(`<h3>${c.t} · ${L('ojo ','eye ')}${sideName(s)}${S.sev[s]<100&&k!=='manual'?` · paresia ${S.sev[s]} %`:''}</h3>`+c.p.map(x=>`<p>${x}</p>`).join(''));}
+  el.innerHTML=html.length?html.join(''):'<p>'+L('Ambos ojos sanos. Elige una lesión o un síndrome en el panel de la izquierda.','Both eyes are healthy. Choose a lesion or syndrome in the left panel.')+'</p>';
   // findings
   const out=[]; const d0=deviation(compute(0,0)); const F=fixEye();
-  const e=d0.eso, v=d0.rht;
-  out.push(['Primaria',(Math.abs(e)<1&&Math.abs(v)<1)?`Ortotropia en posición primaria (fija ${F==='R'?'OD':'OI'}).`:[Math.abs(e)>=1?`${e>0?'Endotropia':'Exotropia'} de ${Math.round(PD(e))}Δ`:'',Math.abs(v)>=1?`hipertropia ${v>0?'derecha':'izquierda'} de ${Math.round(PD(v))}Δ`:''].filter(Boolean).join(' y ')+` con ${F==='R'?'OD':'OI'} fijando.`,Math.abs(e)>=1||Math.abs(v)>=1]);
+  const e=d0.eso, v=d0.rht, fixLabel=F==='R'?L('OD','RE'):L('OI','LE');
+  const primary=Math.abs(e)<1&&Math.abs(v)<1?L(`Ortotropia en posición primaria (fija ${F==='R'?'OD':'OI'}).`,`Orthotropia in primary position (${fixLabel} fixating).`):[Math.abs(e)>=1?`${e>0?L('Endotropia','Esotropia'):L('Exotropia','Exotropia')} de ${Math.round(PD(e))}Δ`:'',Math.abs(v)>=1?`${v>0?L('hipertropia','hypertropia'):L('hipotropia','hypotropia')} ${v>0?L('derecha','right'):L('izquierda','left')} de ${Math.round(PD(v))}Δ`:''].filter(Boolean).join(L(' y ',' and '))+L(` con ${F==='R'?'OD':'OI'} fijando.`,` with ${fixLabel} fixating.`);
+  out.push([L('Primaria','Primary'),primary,Math.abs(e)>=1||Math.abs(v)>=1]);
   const sick=['R','L'].filter(s=>MUS.some(m=>S.E[s][m]<0.95));
   if(sick.length===1){
     const keep={fix:S.fix,cover:S.cover}; S.cover=''; S.fix=sick[0];
     const d2=deviation(compute(0,0)); S.fix=keep.fix; S.cover=keep.cover;
     const m1=Math.hypot(PD(e),PD(v)), m2=Math.hypot(PD(d2.eso),PD(d2.rht));
-    if(m2>m1+2&&sick[0]!==F)out.push(['Hering',`Si fija el ojo parético la desviación sube a unas ${Math.round(m2)}Δ (desviación secundaria mayor que la primaria).`,false]);
+    if(m2>m1+2&&sick[0]!==F)out.push(['Hering',language==='en'?`When the paretic eye fixates, the deviation increases to about ${Math.round(m2)}Δ (secondary deviation greater than primary).`:`Si fija el ojo parético la desviación sube a unas ${Math.round(m2)}Δ (desviación secundaria mayor que la primaria).`,false]);
   }
-  for(const s of ['R','L']){const o=lidOpen(S.E[s]);if(o<0.95)out.push(['Párpado',`${s==='R'?'OD':'OI'}: ptosis ${o<0.2?'completa':o<0.85?'parcial':'leve'}.`,o<0.85]);}
+  for(const s of ['R','L']){const o=lidOpen(S.E[s]);if(o<0.95)out.push([L('Párpado','Eyelid'),`${s==='R'?L('OD','RE'):L('OI','LE')}: ptosis ${o<0.2?L('completa','complete'):o<0.85?L('parcial','partial'):L('leve','mild')}.`,o<0.85]);}
   const pR=pupilMM(S.E.R),pL=pupilMM(S.E.L);
   if(Math.abs(pR-pL)>=0.5){const bigS=pR>pL?'R':'L';const E=S.E[bigS];
-    out.push(['Pupila',E.para<0.9?(E.symp<0.9?`Pupila ${bigS==='R'?'derecha':'izquierda'} media y arreactiva: lesión parasimpática y simpática.`:`Midriasis en ${bigS==='R'?'OD':'OI'}: la anisocoria aumenta con la luz.`):`Miosis en ${bigS==='R'?'OI':'OD'}: la anisocoria aumenta en la oscuridad.`,true]);}
+    out.push([L('Pupila','Pupil'),language==='en'?(E.para<0.9?(E.symp<0.9?`The ${bigS==='R'?'right':'left'} pupil is mid-dilated and unreactive: parasympathetic and sympathetic involvement.`:`Mydriasis in ${bigS==='R'?'RE':'LE'}: anisocoria increases in bright light.`):`Miosis in ${bigS==='R'?'LE':'RE'}: anisocoria increases in darkness.`):(E.para<0.9?(E.symp<0.9?`Pupila ${bigS==='R'?'derecha':'izquierda'} media y arreactiva: lesión parasimpática y simpática.`:`Midriasis en ${bigS==='R'?'OD':'OI'}: la anisocoria aumenta con la luz.`):`Miosis en ${bigS==='R'?'OI':'OD'}: la anisocoria aumenta en la oscuridad.`),true]);}
   f.innerHTML=out.map(([k,t,hot])=>`<div class="fnd"><span class="pill${hot?' hot':''}">${k}</span><span>${t}</span></div>`).join('');
 }
 
@@ -502,14 +547,14 @@ function updateClin(){
 const MKEYS=['LR','MR','SR','IR','SO','IO','LPS'];
 function buildEyeCtl(side){
   const el=$('eyectl-'+side);
-  const opts=Object.entries(LES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+  const opts=Object.entries(labels()).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
   el.innerHTML=`<div class="eyehead"><b>${side==='R'?L('Ojo derecho','Right eye'):L('Ojo izquierdo','Left eye')}</b><span>${side==='R'?L('OD','RE'):L('OI','LE')}</span></div>
   <select id="les-${side}" aria-label="Lesión del ojo ${sideName(side)}">${opts}</select>
-  <div class="row"><label for="sev-${side}">Gravedad</label><input type="range" id="sev-${side}" min="10" max="100" step="5" value="100"><output id="sevO-${side}">100 %</output></div>
+  <div class="row"><label for="sev-${side}">${L('Gravedad','Severity')}</label><input type="range" id="sev-${side}" min="10" max="100" step="5" value="100"><output id="sevO-${side}">100 %</output></div>
   <details class="manual" id="man-${side}"><summary>${L('Fuerza de cada músculo','Strength of each muscle')}</summary><div class="mgrid">
   ${MKEYS.map(m=>`<label for="m-${side}-${m}"><span class="tag" style="background:var(--${m==='LPS'?'n3':NERVE[m]})"></span>${m==='LPS'?'Elevador':SHORT[m]}</label><input type="range" id="m-${side}-${m}" min="0" max="100" step="5" value="100"><output id="mo-${side}-${m}">100</output>`).join('')}
   <label for="m-${side}-para"><span class="tag" style="background:var(--n3)"></span>Pupila III</label><input type="range" id="m-${side}-para" min="0" max="100" step="5" value="100"><output id="mo-${side}-para">100</output>
-  <label for="m-${side}-symp"><span class="tag" style="background:var(--symp)"></span>Simpático</label><input type="range" id="m-${side}-symp" min="0" max="100" step="5" value="100"><output id="mo-${side}-symp">100</output>
+  <label for="m-${side}-symp"><span class="tag" style="background:var(--symp)"></span>${L('Simpático','Sympathetic')}</label><input type="range" id="m-${side}-symp" min="0" max="100" step="5" value="100"><output id="mo-${side}-symp">100</output>
   </div></details>`;
   const sel=$('les-'+side);
   sel.addEventListener('change',()=>{S.syn.k='none';$('synSel').value='none';S.les[side]=sel.value;applyAll();syncCtl();changed();});
@@ -535,7 +580,7 @@ function syncCtl(skipSliders){
   document.querySelectorAll('#synSide button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.syn.side));
   $('lesionLock').hidden=!S.hidden; $('lesionCtl').hidden=S.hidden;
 }
-$('synSel').innerHTML=Object.entries(SYN).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+$('synSel').innerHTML=Object.entries(synLabels()).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
 $('synSel').addEventListener('change',e=>{S.syn.k=e.target.value;if(S.syn.k==='none'){S.les.R='normal';S.les.L='normal';}applyAll();syncCtl();changed();});
 $('synSev').addEventListener('input',e=>{S.syn.sev=+e.target.value;applyAll();syncCtl();changed();});
 $('synSide').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.syn.side=b.dataset.v;applyAll();syncCtl();changed();});
@@ -546,7 +591,7 @@ function bindSegs(){
   });
 }
 function syncSegs(){
-  document.querySelectorAll('.seg[data-bind]').forEach(el=>{const v=S[el.dataset.bind];el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));});
+  document.querySelectorAll('.seg[data-bind]').forEach(el=>{const v=S[el.dataset.bind];el.querySelectorAll('button').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.v===v);if(el.dataset.bind==='fix')b.textContent=b.dataset.v==='R'?L('OD fija','RE fixes'):L('OI fija','LE fixes');if(el.dataset.bind==='cover')b.textContent=b.dataset.v===''?L('Sin tapar','No cover'):b.dataset.v==='R'?L('Tapar OD','Cover RE'):L('Tapar OI','Cover LE');});});
   document.querySelectorAll('#tiltSeg2 button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===S.tilt));
   for(const id of ['btnConv','btnConv2'])$(id).setAttribute('aria-pressed',S.conv);
 }
@@ -623,11 +668,11 @@ $('btnGoSim').onclick=()=>showTab('sim');
 function updateStatus(){
   const st=$('status'); const les=describeLesion();
   const chips=[];
-  if(dxState.running)chips.push(`<span class="fld"><span>Caso</span><b>${esc(dxState.case.titulo)}</b></span>`);
-  else chips.push(`<span class="fld${les==='Sin lesión'?'':' bad'}"><span>Lesión</span><b>${esc(les)}</b></span>`);
-  chips.push(`<span class="fld"><span>Fija</span><b>${fixEye()==='R'?'OD':'OI'}${S.cover?' · tapado '+(S.cover==='R'?'OD':'OI'):''}</b></span>`);
+  if(dxState.running)chips.push(`<span class="fld"><span>${L('Caso','Case')}</span><b>${esc(dxState.case.titulo)}</b></span>`);
+  else chips.push(`<span class="fld${les===L('Sin lesión','No lesion')?'':' bad'}"><span>${L('Lesión','Lesion')}</span><b>${esc(les)}</b></span>`);
+  chips.push(`<span class="fld"><span>${L('Fija','Fixes')}</span><b>${fixEye()==='R'?L('OD','RE'):L('OI','LE')}${S.cover?' · '+L('tapado','covered')+' '+(S.cover==='R'?L('OD','RE'):L('OI','LE')):''}</b></span>`);
   st.innerHTML=chips.join('');
-  const al=$('anatLesion'); if(al)al.textContent=S.hidden?'Caso en curso: la lesión no se marca en la anatomía hasta terminarlo.':`Lesión actual: ${les}. Las estructuras afectadas se marcan en rojo y los músculos paralizados se ven grises.`;
+  const al=$('anatLesion'); if(al)al.textContent=S.hidden?L('Caso en curso: la lesión no se marca en la anatomía hasta terminarlo.','Case in progress: the lesion is not marked in the anatomy until the case ends.'):(language==='en'?`Current lesion: ${les}. Affected structures are marked in red and paralyzed muscles appear gray.`:`Lesión actual: ${les}. Las estructuras afectadas se marcan en rojo y los músculos paralizados se ven grises.`);
 }
 
 /* ================= LOOP ================= */
@@ -735,19 +780,19 @@ function renderDx(){
 function renderCase(m){
   if(!dxState.running&&!dxState.done){
     const list=allCases();
-    m.innerHTML=`<div class="h2">Casos clínicos</div>
-    <p style="font-family:var(--f-text);font-size:17px;margin:0 0 14px;max-width:62ch">La lesión queda oculta. Lee la viñeta, explora al paciente en el panel de la derecha (mirada, inclinación, oclusor, fijación) y responde paso a paso hasta el diagnóstico topográfico.</p>
-    <div class="btnrow" style="margin-bottom:16px"><button class="btn primary" id="caseRandom">Caso aleatorio</button></div>
-    <div class="edlist">${list.map((c,i)=>`<div class="eitem"><div><b>${esc(c.titulo)}</b><small>${caseQuestions(c).length} preguntas${c.custom?' · creado por ti':''}</small></div><button class="btn sm" data-i="${i}">Iniciar</button></div>`).join('')}</div>`;
+    m.innerHTML=`<div class="h2">${L('Casos clínicos','Clinical cases')}</div>
+    <p style="font-family:var(--f-text);font-size:17px;margin:0 0 14px;max-width:62ch">${L('La lesión queda oculta. Lee la viñeta, explora al paciente en el panel de la derecha (mirada, inclinación, oclusor, fijación) y responde paso a paso hasta el diagnóstico topográfico.','The lesion is hidden. Read the vignette, examine the patient in the right panel (gaze, head tilt, occluder, fixation), and answer step by step until you reach the topographic diagnosis.')}</p>
+    <div class="btnrow" style="margin-bottom:16px"><button class="btn primary" id="caseRandom">${L('Caso aleatorio','Random case')}</button></div>
+    <div class="edlist">${list.map((c,i)=>`<div class="eitem"><div><b>${esc(c.titulo)}</b><small>${caseQuestions(c).length} ${L('preguntas','questions')}${c.custom?' · '+L('creado por ti','created by you'):''}</small></div><button class="btn sm" data-i="${i}">${L('Iniciar','Start')}</button></div>`).join('')}</div>`;
     $('caseRandom').onclick=()=>startCase(list[Math.floor(Math.random()*list.length)]);
     m.querySelectorAll('.eitem button').forEach(b=>b.onclick=()=>startCase(list[+b.dataset.i]));
     return;
   }
   if(dxState.done&&!dxState.running){
     const cs=dxState.case, ok=dxState.ans.filter(Boolean).length, n=dxState.qs.length;
-    m.innerHTML=`<div class="h2">Resultado</div>
-    <div class="result"><div class="score">${ok}/${n}</div><div><b style="font-size:16px">${esc(cs.titulo)}</b><div style="font-family:var(--f-text);font-size:16px;margin-top:4px">Diagnóstico: ${esc(cs.dx||describeLesion())}</div><div class="note">Lesión cargada en el simulador: ${esc(describeLesion())}</div></div></div>
-    <div class="btnrow" style="margin-top:14px"><button class="btn primary" id="rSim">Ver en el simulador</button><button class="btn" id="rAnat">Ver en anatomía 3D</button><button class="btn" id="rAgain">Otro caso</button></div>`;
+    m.innerHTML=`<div class="h2">${L('Resultado','Result')}</div>
+    <div class="result"><div class="score">${ok}/${n}</div><div><b style="font-size:16px">${esc(cs.titulo)}</b><div style="font-family:var(--f-text);font-size:16px;margin-top:4px">${L('Diagnóstico','Diagnosis')}: ${esc(cs.dx||describeLesion())}</div><div class="note">${L('Lesión cargada en el simulador:','Lesion loaded in simulator:')} ${esc(describeLesion())}</div></div></div>
+    <div class="btnrow" style="margin-top:14px"><button class="btn primary" id="rSim">${L('Ver en el simulador','View in simulator')}</button><button class="btn" id="rAnat">${L('Ver en anatomía 3D','View in 3D anatomy')}</button><button class="btn" id="rAgain">${L('Otro caso','Another case')}</button></div>`;
     $('rSim').onclick=()=>showTab('sim'); $('rAnat').onclick=()=>showTab('anat'); $('rAgain').onclick=()=>{dxState.done=false;renderDx();};
     return;
   }
@@ -758,11 +803,11 @@ function renderCase(m){
   if(q){optsHtml=q.opts.map((o,i)=>{let cls='opt';if(dxState.picked!=null){if(i===q.c)cls+=' right';else if(i===dxState.picked)cls+=' wrong';}
     return `<button class="${cls}" data-i="${i}" ${dxState.picked!=null?'disabled':''}><b>${letters[i]}</b><span>${esc(o)}</span></button>`;}).join('');}
   const explore=q&&(q.gaze||q.tilt!=null||q.conv)?`<button class="btn sm hintbtn" id="qExplore">Explorar: ${q.gaze?'mirar '+fmtGaze(q.gaze[0],q.gaze[1]):''}${q.tilt!=null?(q.gaze?' · ':'')+'inclinar la cabeza a la '+(q.tilt>0?'derecha':'izquierda'):''}${q.conv?'pedir convergencia':''}</button>`:'';
-  m.innerHTML=`<div class="h2"><span>Caso · ${esc(cs.titulo)}</span><button class="btn sm ghost" id="caseQuit">Abandonar</button></div>
+  m.innerHTML=`<div class="h2"><span>${L('Caso','Case')} · ${esc(cs.titulo)}</span><button class="btn sm ghost" id="caseQuit">${L('Abandonar','Quit')}</button></div>
     <div class="vignette">${esc(cs.vineta)}</div>
     <div class="progress">${prog}</div>
-    ${q?`<div class="note">Pregunta ${qi+1} de ${qs.length}</div><div class="q">${esc(q.q)}</div><div class="opts">${optsHtml}</div>${explore}
-    ${dxState.picked!=null?`<div class="fb ${dxState.picked===q.c?'ok':'no'}"><b>${dxState.picked===q.c?'Correcto.':'Incorrecto.'}</b> ${esc(q.fb)}</div><div class="btnrow" style="margin-top:12px"><button class="btn primary" id="qNext">${qi+1<qs.length?'Siguiente':'Ver diagnóstico'}</button></div>`:''}`:'<p>Este caso no tiene preguntas.</p><button class="btn primary" id="qNext">Ver diagnóstico</button>'}`;
+    ${q?`<div class="note">${L('Pregunta','Question')} ${qi+1} ${L('de','of')} ${qs.length}</div><div class="q">${esc(q.q)}</div><div class="opts">${optsHtml}</div>${explore}
+    ${dxState.picked!=null?`<div class="fb ${dxState.picked===q.c?'ok':'no'}"><b>${dxState.picked===q.c?L('Correcto.','Correct.'):L('Incorrecto.','Incorrect.')}</b> ${esc(q.fb)}</div><div class="btnrow" style="margin-top:12px"><button class="btn primary" id="qNext">${qi+1<qs.length?L('Siguiente','Next'):L('Ver diagnóstico','View diagnosis')}</button></div>`:''}`:`<p>${L('Este caso no tiene preguntas.','This case has no questions.')}</p><button class="btn primary" id="qNext">${L('Ver diagnóstico','View diagnosis')}</button>`}`;
   $('caseQuit').onclick=()=>{dxState.done=false;endCase(false);};
   m.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{dxState.picked=+b.dataset.i;dxState.ans.push(dxState.picked===q.c);renderDx();});
   const ex=$('qExplore'); if(ex)ex.onclick=()=>{if(q.gaze)setGaze(q.gaze[0],q.gaze[1]);if(q.tilt!=null)setHead(q.tilt,S.yaw);if(q.conv&&!S.conv)toggleConv();};
@@ -782,11 +827,11 @@ function parksSets(){
 }
 function renderParks(m){
   const P=dxState.parks, set=parksSets();
-  const chips=PARKS_M.map(([s,mu])=>{const id=s+'-'+mu;const inn=set.includes(id);return `<div class="mchip${inn?'':' out'}${inn&&set.length===1?' win':''}">${s==='R'?'OD':'OI'} · ${SHORT[mu]}<small>${MNAME[mu]}</small></div>`;}).join('');
+  const chips=PARKS_M.map(([s,mu])=>{const id=s+'-'+mu;const inn=set.includes(id);return `<div class="mchip${inn?'':' out'}${inn&&set.length===1?' win':''}">${s==='R'?'OD':'OI'} · ${SHORT[mu]}<small>${(language==='en'?MNAME_EN:MNAME)[mu]}</small></div>`;}).join('');
   const step=(n,title,help,opts,val)=>`<div class="step"><h4><span class="n">${n}</span>${title}</h4><div class="note" style="margin-bottom:8px">${help}</div><div class="btnrow">${opts.map(([v,t])=>`<button class="btn sm" data-step="${n}" data-v="${v}" aria-pressed="${val===v}" ${n>1&&!P[n-2]?'disabled':''}>${t}</button>`).join('')}</div></div>`;
   let result='';
   if(set.length===1&&P[2]){const [s,mu]=set[0].split('-');const nerve=mu==='SO'?'IV par (troclear)':'III par';
-    result=`<div class="leaf" style="margin-top:14px"><h3>${MNAME[mu]} ${sideName(s)}</h3><p>Músculo parético: ${MNAME[mu].toLowerCase()} del ojo ${sideName(s)}, inervado por el ${nerve}. ${mu==='SO'?'Es el resultado más frecuente: la parálisis del IV es la causa principal de diplopía vertical aislada.':'Una paresia aislada de un músculo del III es rara: busca afección de otros músculos del III, miastenia o una causa restrictiva.'}</p><button class="btn primary" id="parksLoad">Cargar en el simulador</button></div>`;}
+    result=`<div class="leaf" style="margin-top:14px"><h3>${(language==='en'?MNAME_EN:MNAME)[mu]} ${sideName(s)}</h3><p>Músculo parético: ${(language==='en'?MNAME_EN:MNAME)[mu].toLowerCase()} del ojo ${sideName(s)}, inervado por el ${nerve}. ${mu==='SO'?'Es el resultado más frecuente: la parálisis del IV es la causa principal de diplopía vertical aislada.':'Una paresia aislada de un músculo del III es rara: busca afección de otros músculos del III, miastenia o una causa restrictiva.'}</p><button class="btn primary" id="parksLoad">Cargar en el simulador</button></div>`;}
   m.innerHTML=`<div class="h2">Tres pasos de Parks-Bielschowsky</div>
   <p style="font-family:var(--f-text);font-size:16.5px;margin:0 0 6px;max-width:64ch">Para una hipertropia por parálisis de un solo músculo cicloverical. Cada paso descarta la mitad de los candidatos. Mide en el panel de la derecha: la lectura muestra HTD o HTI en dioptrías prismáticas.</p>
   <div class="parks">${chips}</div>
@@ -1013,7 +1058,7 @@ const EOM=window.EOM={S,MUS,NERVE,T0,INFO,get disp(){return disp;},cur:null,lesi
 function tabify(root){(root||document).querySelectorAll('.card>h2:first-child,.card>.h2:first-child').forEach(h=>{if(h.querySelector('.tabl'))return;const t=[...h.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(t){const sp=document.createElement('span');sp.className='tabl';sp.textContent=t.textContent.trim();h.replaceChild(sp,t);}else{const f=h.firstElementChild;if(f&&f.tagName==='SPAN'&&!f.classList.contains('chip'))f.classList.add('tabl');}});}
 tabify();
 new MutationObserver(()=>tabify()).observe(document.getElementById('dxMain'),{childList:true,subtree:false});
-buildEyeCtl('R');buildEyeCtl('L');applyAll();syncCtl();syncSegs();syncPads();
+buildEyeCtl('R');buildEyeCtl('L');applyAll();syncCtl();syncSegs();syncPads();translate();
 cur=compute(0,0);
 updateClin();updateStatus();
 new ResizeObserver(()=>{markDirty();}).observe(document.querySelector('main'));
@@ -1021,6 +1066,7 @@ new ResizeObserver(()=>{nineNeeds=true;}).observe($('nine'));
 const HASHTAB={simulador:'sim',anatomia:'anat',diagnostico:'dx'};
 let startTab=HASHTAB[(location.hash||'').slice(1)];
 if(!startTab){try{startTab=localStorage.getItem('oculo-tab');}catch(e){}}
+if(language==='en')setLanguage('en');
 showTab(startTab&&TABHASH[startTab]?startTab:'sim');
 initStore();
 requestAnimationFrame(frame);
