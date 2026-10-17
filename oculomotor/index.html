@@ -2584,8 +2584,11 @@ function drawLabels(){
     const w=SIDES[partSide].root.localToWorld(lp.add(Pp.g.position)).project(camA);
     el.style.display='';el.textContent=tr('Lesión','Lesion')+' '+(side==='R'?'RE':'LE');el.style.left=((w.x+1)/2*r.width+6)+'px';el.style.top=((1-w.y)/2*r.height+16)+'px';}
 }
+let lastRender=0;
 function loop(now){
   requestAnimationFrame(loop);
+  if(document.hidden||now-lastRender<33)return;
+  lastRender=now;
   if(!hostKey)return; const h=hosts[hostKey]; if(!h||h.offsetParent===null)return;
   update(now);
   const cam=mode==='anat'?camA:camF;
