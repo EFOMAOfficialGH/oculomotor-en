@@ -197,7 +197,6 @@ const LABELS=[
  ['Mesencéfalo','brainstem',()=>V(XM-12,7,-100),'',0],['Protuberancia','brainstem',()=>V(XM-16,-15,-100),'',0],
  ['OD','globe',()=>V(0,-16,6),'',1]
 ];
-const tr=window.oculoTranslate||((es,en)=>en);
 const labEls=LABELS.map(([t,,,cls])=>{const d=document.createElement('div');d.className='lab'+(cls?' '+cls:'');d.textContent=t;labelsEl.appendChild(d);return d;});
 const labOI=document.createElement('div');labOI.className='lab';labOI.textContent='OI';labelsEl.appendChild(labOI);
 const lesLabs={R:document.createElement('div'),L:document.createElement('div')};for(const k in lesLabs){lesLabs[k].className='lab les';labelsEl.appendChild(lesLabs[k]);}
@@ -260,9 +259,9 @@ function select(s){
   selected=s; lastKey='';
   const T=document.getElementById('infoType'),N=document.getElementById('infoName'),B=document.getElementById('infoBody');
   document.getElementById('btnIsolate').disabled=!s; document.getElementById('btnHide').disabled=!s;
-  if(!s){T.textContent=tr('Pieza seleccionada','Selected part');N.textContent=tr('Toca cualquier estructura','Touch any structure');B.innerHTML=tr('Gira con un dedo o el ratón, acerca con pellizco o rueda. Toca un músculo, nervio, núcleo o vaso para ver su origen, inserción, inervación y perla clínica.','Rotate with one finger or the mouse, zoom with a pinch or wheel. Touch a muscle, nerve, nucleus, or vessel to see its origin, insertion, innervation, and clinical pearl.');return;}
+  if(!s){T.textContent='Pieza seleccionada';N.textContent='Toca cualquier estructura';B.innerHTML='Gira con un dedo o el ratón, acerca con pellizco o rueda. Toca un músculo, nervio, núcleo o vaso para ver su origen, inserción, inervación y perla clínica.';return;}
   const inf=EOM.INFO[s.info]||{n:s.info};
-  T.textContent=(inf.t||'')+(['brainstem','n3nuc','n4nuc','n6nuc','pprf','ew','MLF','basilar','pca','sca'].includes(s.info)?'':(s.side==='R'?tr(' · ojo derecho',' · right eye'):tr(' · ojo izquierdo',' · left eye')));N.textContent=inf.n;
+  T.textContent=(inf.t||'')+(['brainstem','n3nuc','n4nuc','n6nuc','pprf','ew','MLF','basilar','pca','sca'].includes(s.info)?'':(s.side==='R'?' · ojo derecho':' · ojo izquierdo'));N.textContent=inf.n;
   const esc=x=>String(x||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   const rows=[['Origen',inf.o],['Inserción / destino',inf.i],['Inervación',inf.v],['Acción / trayecto',inf.a]].filter(r=>r[1]&&r[1]!=='—');
   B.innerHTML=`<dl>${rows.map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>${inf.p?`<div class="pearl">${esc(inf.p)}</div>`:''}`;
@@ -396,7 +395,7 @@ function drawLabels(){
     const d=SITE[first];const partSide=d[1]==='brainstem'?'R':side;const Pp=SIDES[partSide].parts[d[1]];if(!Pp||!Pp.g.visible){el.style.display='none';continue;}
     let lp=d[0].clone();if(d[1]==='brainstem'&&side==='L')lp.x=2*XM-lp.x;
     const w=SIDES[partSide].root.localToWorld(lp.add(Pp.g.position)).project(camA);
-    el.style.display='';el.textContent=tr('Lesión','Lesion')+' '+(side==='R'?'RE':'LE');el.style.left=((w.x+1)/2*r.width+6)+'px';el.style.top=((1-w.y)/2*r.height+16)+'px';}
+    el.style.display='';el.textContent='Lesión '+(side==='R'?'OD':'OI');el.style.left=((w.x+1)/2*r.width+6)+'px';el.style.top=((1-w.y)/2*r.height+16)+'px';}
 }
 function loop(now){
   requestAnimationFrame(loop);
