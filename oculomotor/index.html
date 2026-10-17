@@ -1009,7 +1009,7 @@ const T0=15, OBL=0.6, HX=0.15, LIM=50;
 	 * The simulator is Spanish-first. Keep the original text as the source of
 	 * truth so switching languages is reversible, including after a rerender.
 	 */
-	const I18N={
+		const I18N={
 		'Idioma':'Language','Español':'Spanish','Simulador':'Simulator','Anatomía 3D':'3D anatomy','Diagnóstico':'Diagnosis','Secciones':'Sections',
 		'Hoja de exploración · pares craneales III, IV y VI':'Examination sheet · cranial nerves III, IV and VI',
 		'Lesión':'Lesion','por ojo o por síndrome':'by eye or syndrome','Síndrome':'Syndrome','ambos ojos':'both eyes','Lado derecho':'Right side','Lado izquierdo':'Left side','Gravedad':'Severity',
@@ -1022,8 +1022,9 @@ const T0=15, OBL=0.6, HX=0.15, LIM=50;
 		'Pieza seleccionada':'Selected part','Toca cualquier estructura':'Touch any structure','Gira con un dedo o el ratón, acerca con pellizco o rueda. Toca un músculo, nervio, núcleo o vaso para ver su origen, inserción, inervación y perla clínica.':'Rotate with one finger or the mouse, zoom with a pinch or wheel. Touch a muscle, nerve, nucleus, or vessel to see its origin, insertion, innervation, and clinical pearl.','Aislar':'Isolate','Ocultar':'Hide','Mostrar todo':'Show all','Capas':'Layers','Etiquetas':'Labels','Ninguna':'None','Clave':'Key','Todas':'All','Movimiento':'Movement','ligado al simulador':'linked to simulator','Arrastra para mover la linterna':'Drag to move the light','arrastra la linterna':'drag the light','Cambiar lesión':'Change lesion',
 		'Caso clínico':'Clinical case','Tres pasos de Parks':'Parks three-step test','Algoritmo de diplopía':'Diplopia algorithm','Mis preguntas':'My questions','Explora al paciente':'Explore the patient','arrastra la linterna':'drag the light','Inclinar cabeza':'Tilt head','Recta':'Straight','Fija':'Fixes','No':'No',
 		'Cómo funciona el modelo.':'How the model works.','Modelo didáctico con parámetros aproximados: no reproduce magnitudes de un paciente real.':'Educational model with approximate parameters: it does not reproduce measurements from a real patient.',
-		'Lesión oculta':'Hidden lesion','Sin lesión':'No lesion','Ninguno':'None','Derecho':'Right','Izquierdo':'Left','der.':'right','izq.':'left'
-	};
+			'Lesión oculta':'Hidden lesion','Sin lesión':'No lesion','Ninguno':'None','Derecho':'Right','Izquierdo':'Left','derecho':'right','izquierdo':'left','der.':'right','izq.':'left','Ojo derecho':'Right eye','Ojo izquierdo':'Left eye','Fuerza de cada músculo':'Strength of each muscle','Pupila III':'CN III pupil','Linterna: al frente':'Light: front','← derecha del paciente':'← patient’s right','izquierda del paciente →':'patient’s left →','al frente':'straight ahead','arriba':'up','abajo':'down','a la derecha':'to the right','a la izquierda':'to the left','Cabeza':'Head','inclinada a la':'tilted to the','cara a la':'face turned to the','Convergencia (objetivo cercano)':'Convergence (near target)','oclusor':'occluder','permiso: se pedirá al activar':'permission: requested when enabled','cámara disponible ✓':'camera available ✓','cámara no disponible aquí ✗':'camera unavailable here ✗'
+		};
+		const L=(es,en)=>language==='en'?en:es;
 	const originalText=new WeakMap(), originalAttr=new WeakMap();
 	let language='es';
 	function translate(root=document){
@@ -1160,8 +1161,8 @@ function applyAll(){
   } else { applyLesion('R'); applyLesion('L'); }
 }
 function fixEye(){return S.cover?other(S.cover):S.fix;}
-const sideName=s=>s==='R'?'derecho':'izquierdo';
-const sideShort=s=>s==='R'?'der.':'izq.';
+const sideName=s=>s==='R'?L('derecho','right'):L('izquierdo','left');
+const sideShort=s=>s==='R'?L('der.','right'):L('izq.','left');
 function describeLesion(){
   if(S.hidden)return 'Lesión oculta';
   if(S.syn.k!=='none')return SYN[S.syn.k].label+(['VI2','IV2'].includes(S.syn.k)?'':' '+sideShort(S.syn.side));
@@ -1304,8 +1305,8 @@ function drawEye(ctx,side,cx,cy,R,p,E,opt){
 }
 
 function fmtGaze(x,y){
-  if(Math.abs(x)<1&&Math.abs(y)<1)return 'al frente';
-  const a=[]; if(Math.abs(y)>=1)a.push((y>0?'arriba ':'abajo ')+Math.round(Math.abs(y))+'°'); if(Math.abs(x)>=1)a.push((x>0?'a la derecha ':'a la izquierda ')+Math.round(Math.abs(x))+'°');
+  if(Math.abs(x)<1&&Math.abs(y)<1)return L('al frente','straight ahead');
+  const a=[]; if(Math.abs(y)>=1)a.push((y>0?L('arriba ','up '):L('abajo ','down '))+Math.round(Math.abs(y))+'°'); if(Math.abs(x)>=1)a.push((x>0?L('a la derecha ','to the right '):L('a la izquierda ','to the left '))+Math.round(Math.abs(x))+'°');
   return a.join(', ');
 }
 function drawOverlay(cv,store,opts){
@@ -1322,10 +1323,10 @@ function drawOverlay(cv,store,opts){
   ctx.fillStyle=tg; ctx.beginPath(); ctx.arc(tx,ty,18,0,7); ctx.fill();
   ctx.beginPath(); ctx.arc(tx,ty,4.5,0,7); ctx.fillStyle='#FFD36A'; ctx.fill(); ctx.strokeStyle='#5B4312'; ctx.lineWidth=1; ctx.stroke();
   ctx.fillStyle=ink; ctx.font='500 11px Archivo, sans-serif'; ctx.textAlign='left';
-  if(!opts||!opts.compact){ctx.fillText('← derecha del paciente',10,h-10); ctx.textAlign='right'; ctx.fillText('izquierda del paciente →',w-10,h-10);}
-  ctx.textAlign='left'; ctx.fillText('Linterna: '+fmtGaze(S.gaze.x,S.gaze.y),10,18);
-  if(S.tilt||S.yaw){ctx.textAlign='right';const parts=[];if(S.tilt)parts.push('inclinada a la '+(S.tilt>0?'derecha ':'izquierda ')+Math.abs(S.tilt)+'°');if(S.yaw)parts.push('cara a la '+(S.yaw>0?'derecha ':'izquierda ')+Math.abs(S.yaw)+'°');ctx.fillText('Cabeza '+parts.join(' · '),w-10,18);}
-  if(convDeg()>=3){ctx.textAlign='center';ctx.fillStyle='#8FE0D2';ctx.fillText('Convergencia (objetivo cercano)',cx,h-28);}
+  if(!opts||!opts.compact){ctx.fillText(L('← derecha del paciente','← patient’s right'),10,h-10); ctx.textAlign='right'; ctx.fillText(L('izquierda del paciente →','patient’s left →'),w-10,h-10);}
+  ctx.textAlign='left'; ctx.fillText(L('Linterna: ','Light: ')+fmtGaze(S.gaze.x,S.gaze.y),10,18);
+  if(S.tilt||S.yaw){ctx.textAlign='right';const parts=[];if(S.tilt)parts.push(L('inclinada a la ','tilted to the ')+(S.tilt>0?L('derecha ','right '):L('izquierda ','left '))+Math.abs(S.tilt)+'°');if(S.yaw)parts.push(L('cara a la ','face turned to the ')+(S.yaw>0?L('derecha ','right '):L('izquierda ','left '))+Math.abs(S.yaw)+'°');ctx.fillText(L('Cabeza ','Head ')+parts.join(' · '),w-10,18);}
+  if(convDeg()>=3){ctx.textAlign='center';ctx.fillStyle='#8FE0D2';ctx.fillText(L('Convergencia (objetivo cercano)','Convergence (near target)'),cx,h-28);}
 }
 function drawFace(cv,disp,store,opts){
   if(EOM.has3D)return drawOverlay(cv,store,opts);
@@ -1364,10 +1365,10 @@ function drawFace(cv,disp,store,opts){
   ctx.fillStyle=tg; ctx.beginPath(); ctx.arc(tx,ty,16,0,7); ctx.fill();
   ctx.beginPath(); ctx.arc(tx,ty,4.5,0,7); ctx.fillStyle='#FFD36A'; ctx.fill(); ctx.strokeStyle='#5B4312'; ctx.lineWidth=1; ctx.stroke();
   ctx.fillStyle=C.muted; ctx.font='500 11px Archivo, sans-serif'; ctx.textAlign='left';
-  if(!opts||!opts.compact){ctx.fillText('← derecha del paciente',10,h-10); ctx.textAlign='right'; ctx.fillText('izquierda del paciente →',w-10,h-10);}
-  ctx.textAlign='left'; ctx.fillText('Linterna: '+fmtGaze(S.gaze.x,S.gaze.y),10,18);
-  if(S.tilt||S.yaw){ctx.textAlign='right';const parts=[];if(S.tilt)parts.push('inclinada a la '+(S.tilt>0?'derecha ':'izquierda ')+Math.abs(S.tilt)+'°');if(S.yaw)parts.push('cara a la '+(S.yaw>0?'derecha ':'izquierda ')+Math.abs(S.yaw)+'°');ctx.fillText('Cabeza '+parts.join(' · '),w-10,18);}
-  if(convDeg()>=3){ctx.textAlign='center';ctx.fillStyle=C.accent;ctx.fillText('Convergencia (objetivo cercano)',cx,h-26);}
+  if(!opts||!opts.compact){ctx.fillText(L('← derecha del paciente','← patient’s right'),10,h-10); ctx.textAlign='right'; ctx.fillText(L('izquierda del paciente →','patient’s left →'),w-10,h-10);}
+  ctx.textAlign='left'; ctx.fillText(L('Linterna: ','Light: ')+fmtGaze(S.gaze.x,S.gaze.y),10,18);
+  if(S.tilt||S.yaw){ctx.textAlign='right';const parts=[];if(S.tilt)parts.push(L('inclinada a la ','tilted to the ')+(S.tilt>0?L('derecha ','right '):L('izquierda ','left '))+Math.abs(S.tilt)+'°');if(S.yaw)parts.push(L('cara a la ','face turned to the ')+(S.yaw>0?L('derecha ','right '):L('izquierda ','left '))+Math.abs(S.yaw)+'°');ctx.fillText(L('Cabeza ','Head ')+parts.join(' · '),w-10,18);}
+  if(convDeg()>=3){ctx.textAlign='center';ctx.fillStyle=C.accent;ctx.fillText(L('Convergencia (objetivo cercano)','Convergence (near target)'),cx,h-26);}
 }
 
 /* nine positions */
@@ -1498,10 +1499,10 @@ const MKEYS=['LR','MR','SR','IR','SO','IO','LPS'];
 function buildEyeCtl(side){
   const el=$('eyectl-'+side);
   const opts=Object.entries(LES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
-  el.innerHTML=`<div class="eyehead"><b>${side==='R'?'Ojo derecho':'Ojo izquierdo'}</b><span>${side==='R'?'OD':'OI'}</span></div>
+  el.innerHTML=`<div class="eyehead"><b>${side==='R'?L('Ojo derecho','Right eye'):L('Ojo izquierdo','Left eye')}</b><span>${side==='R'?L('OD','RE'):L('OI','LE')}</span></div>
   <select id="les-${side}" aria-label="Lesión del ojo ${sideName(side)}">${opts}</select>
   <div class="row"><label for="sev-${side}">Gravedad</label><input type="range" id="sev-${side}" min="10" max="100" step="5" value="100"><output id="sevO-${side}">100 %</output></div>
-  <details class="manual" id="man-${side}"><summary>Fuerza de cada músculo</summary><div class="mgrid">
+  <details class="manual" id="man-${side}"><summary>${L('Fuerza de cada músculo','Strength of each muscle')}</summary><div class="mgrid">
   ${MKEYS.map(m=>`<label for="m-${side}-${m}"><span class="tag" style="background:var(--${m==='LPS'?'n3':NERVE[m]})"></span>${m==='LPS'?'Elevador':SHORT[m]}</label><input type="range" id="m-${side}-${m}" min="0" max="100" step="5" value="100"><output id="mo-${side}-${m}">100</output>`).join('')}
   <label for="m-${side}-para"><span class="tag" style="background:var(--n3)"></span>Pupila III</label><input type="range" id="m-${side}-para" min="0" max="100" step="5" value="100"><output id="mo-${side}-para">100</output>
   <label for="m-${side}-symp"><span class="tag" style="background:var(--symp)"></span>Simpático</label><input type="range" id="m-${side}-symp" min="0" max="100" step="5" value="100"><output id="mo-${side}-symp">100</output>
@@ -1982,10 +1983,10 @@ function camHelp(kind){
 }
 async function camDiag(){
   const d=$('camDiag'); if(!d)return; const parts=[];
-  const sec=window.isSecureContext; parts.push(`<span class="${sec?'ok':'no'}">${sec?'https ✓':'sin https ✗'}</span>`);
-  const api=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia); parts.push(`<span class="${api?'ok':'no'}">${api?'cámara disponible ✓':'cámara no disponible aquí ✗'}</span>`);
+  const sec=window.isSecureContext; parts.push(`<span class="${sec?'ok':'no'}">${sec?'https ✓':L('sin https ✗','no https ✗')}</span>`);
+  const api=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia); parts.push(`<span class="${api?'ok':'no'}">${api?L('cámara disponible ✓','camera available ✓'):L('cámara no disponible aquí ✗','camera unavailable here ✗')}</span>`);
   let st='';try{if(navigator.permissions&&navigator.permissions.query){const r=await navigator.permissions.query({name:'camera'});st=r.state;r.onchange=()=>camDiag();}}catch(e){}
-  if(st)parts.push(`<span class="${st==='denied'?'no':'ok'}">permiso: ${st==='granted'?'permitido ✓':st==='denied'?'bloqueado ✗':'se pedirá al activar'}</span>`);
+  if(st)parts.push(`<span class="${st==='denied'?'no':'ok'}">${L('permiso','permission')}: ${st==='granted'?L('permitido ✓','allowed ✓'):st==='denied'?L('bloqueado ✗','blocked ✗'):L('se pedirá al activar','requested when enabled')}</span>`);
   d.innerHTML=parts.join('');
   if(!sec)camHelp('http'); else if(st==='denied')camHelp('denied');
 }
