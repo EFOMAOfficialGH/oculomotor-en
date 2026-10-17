@@ -7,7 +7,7 @@ const MUS=['LR','MR','SR','IR','SO','IO'];
 const SHORT={LR:'RL',MR:'RM',SR:'RS',IR:'RI',SO:'OS',IO:'OI'};
 const NERVE={LR:'n6',MR:'n3',SR:'n3',IR:'n3',SO:'n4',IO:'n3'};
 const T0=15, OBL=0.6, HX=0.15, LIM=50;
-	const {CASES,TREE,INFO}=window.OCU_DATA;
+		let {CASES,TREE,INFO}=window.OCU_DATA;
 
 	/* ================= LANGUAGE =================
 	 * The simulator is Spanish-first. Keep the original text as the source of
@@ -41,9 +41,19 @@ const T0=15, OBL=0.6, HX=0.15, LIM=50;
 		root.querySelectorAll?.('[aria-label],[title]').forEach(el=>{for(const a of ['aria-label','title']){if(!el.hasAttribute(a))continue;if(!originalAttr.has(el))originalAttr.set(el,{...(originalAttr.get(el)||{}),[a]:el.getAttribute(a)});const base=originalAttr.get(el)[a];el.setAttribute(a,language==='en'?(I18N[base]||base):base);}});
 		document.documentElement.lang=language;
 	}
-	function setLanguage(next){language=next==='en'?'en':'es';try{localStorage.setItem('oculo-language',language);}catch(e){};translate();}
-	try{language=localStorage.getItem('oculo-language')==='en'?'en':'es';}catch(e){}
-	const langSelect=$('languageSelect'); if(langSelect){langSelect.value=language;langSelect.addEventListener('change',e=>setLanguage(e.target.value));}
+		function setLanguage(next){
+			language=next==='en'?'en':'es';
+			try{localStorage.setItem('oculo-language',language);}catch(e){}
+			const data=language==='en'&&window.OCU_DATA_EN?window.OCU_DATA_EN:window.OCU_DATA;
+			({CASES,TREE,INFO}=data);
+			if(window.EOM)window.EOM.INFO=INFO;
+			translate();
+			if(typeof buildEyeCtl==='function'){buildEyeCtl('R');buildEyeCtl('L');applyAll();syncCtl();syncSegs();changed();}
+			if(typeof renderDx==='function')renderDx();
+		}
+		try{language=localStorage.getItem('oculo-language')==='en'?'en':'es';}catch(e){}
+		if(language==='en'&&window.OCU_DATA_EN)({CASES,TREE,INFO}=window.OCU_DATA_EN);
+		const langSelect=$('languageSelect'); if(langSelect){langSelect.value=language;langSelect.addEventListener('change',e=>setLanguage(e.target.value));}
 	translate();
 	new MutationObserver(()=>{translate();}).observe(document.body,{childList:true,subtree:true});
 

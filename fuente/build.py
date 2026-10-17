@@ -8,7 +8,7 @@ rd = lambda p: open(p, encoding='utf-8').read()
 b64 = lambda p, t: 'data:' + t + ';base64,' + base64.b64encode(open(p, 'rb').read()).decode()
 
 out = rd(P('src', 'a_head.html')) + rd(P('src', 'b_body.html'))
-out += '\n<script>\n' + rd(P('src', 'e_data.js')) + '\n</script>\n<script>\n' + rd(P('src', 'c_main.js')) + '\n</script>\n'
+out += '\n<script>\n' + rd(P('src', 'e_data.js')) + '\n</script>\n<script>\n' + rd(P('src', 'e_data_en.js')) + '\n</script>\n<script>\n' + rd(P('src', 'c_main.js')) + '\n</script>\n'
 out += '<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>\n'
 out += '<script type="application/json" id="headData">' + rd(P('head', 'head.json')) + '</script>\n'
 out += '<script>window.HEAD_MAP="' + b64(P('assets', 'Map-COL.jpg'), 'image/jpeg') + '";window.HEAD_NORMAL="' + b64(P('assets', 'Infinite-Level_02_Tangent_SmoothUV.jpg'), 'image/jpeg') + '";</script>\n'
