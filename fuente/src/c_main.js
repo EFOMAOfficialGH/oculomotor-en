@@ -908,7 +908,7 @@ function renderForm(m){
 
 
 /* ================= CÁMARA Y ROBOT ================= */
-const Cam={on:false,stream:null,mode:'hand',lm:null,loading:false,sm:null,lastSeen:0,small:null};
+const Cam={on:false,stream:null,mode:'hand',lm:null,loading:false,sm:null,lastSeen:0,small:null,ts:0,detectorError:false};
 const CAM_BLOCKED='No se pudo abrir la cámara. Si abriste la app dentro de Claude o dentro de Moodle, ábrela directamente en su propia pestaña (tu dirección https). Mientras tanto puedes arrastrar la linterna.';
 function camMsg(t){$('camStatus').textContent=t;}
 async function loadHand(){
@@ -937,7 +937,7 @@ async function camStart(){
       SecurityError:CAM_BLOCKED};
     camMsg((M[n]||CAM_BLOCKED)+(n?' ('+n+')':''));if(n==='NotAllowedError'||n==='SecurityError')camHelp('denied');camDiag();return;}
   const v=$('camVideo'); v.srcObject=Cam.stream; try{await v.play();}catch(e){}
-  Cam.on=true; stopAnim(); S.conv=false; syncSegs(); $('camIdle').hidden=true; $('btnCam').textContent='Apagar cámara'; $('btnCamTop').textContent='Cámara activa'; const hp=$('camHelp'); if(hp)hp.hidden=true; camDiag();
+  Cam.on=true; Cam.ts=0; Cam.detectorError=false; stopAnim(); S.conv=false; syncSegs(); $('camIdle').hidden=true; $('btnCam').textContent='Apagar cámara'; $('btnCamTop').textContent='Cámara activa'; const hp=$('camHelp'); if(hp)hp.hidden=true; camDiag();
   if(Cam.mode==='hand')loadHand(); else camMsg('Modo dedal rojo: mueve la punta roja frente a la cámara.');
   requestAnimationFrame(camLoop);
 }
@@ -957,7 +957,7 @@ function camLoop(now){
   if(!Cam.on)return; requestAnimationFrame(camLoop);
   const v=$('camVideo'); if(v.readyState<2)return;
   let pt=null;
-  if(Cam.mode==='hand'&&Cam.lm){try{const r=Cam.lm.detectForVideo(v,now);if(r.landmarks&&r.landmarks.length){const L=r.landmarks[0],t=L[8];pt={x:1-t.x,y:t.y,size:Math.hypot(L[0].x-L[9].x,L[0].y-L[9].y),hand:L};}}catch(e){}}
+  if(Cam.mode==='hand'&&Cam.lm){try{Cam.ts=Math.max(Cam.ts+1,Math.round(v.currentTime*1000));const r=Cam.lm.detectForVideo(v,Cam.ts);if(r.landmarks&&r.landmarks.length){const L=r.landmarks[0],t=L[8];pt={x:1-t.x,y:t.y,size:Math.hypot(L[0].x-L[9].x,L[0].y-L[9].y),hand:L};}}catch(e){if(!Cam.detectorError){Cam.detectorError=true;camMsg('Hand tracking error: '+(e&&e.message?e.message:'detector failed'));}}}
   else if(Cam.mode==='color')pt=findRed(v);
   const ov=$('camOverlay'), W=ov.clientWidth, H=ov.clientHeight, dpr=Math.min(2,devicePixelRatio||1);
   if(ov.width!==Math.round(W*dpr)){ov.width=Math.round(W*dpr);ov.height=Math.round(H*dpr);}
