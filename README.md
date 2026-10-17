@@ -1,49 +1,102 @@
-# Oculomotor · simulador de pares craneales
+# NOTE:This Project is by docramiro / Ramiro Esparza, I only added English language as an option, Original site: github.com/docramiro/oculomotor
 
-Simulador web de la motilidad ocular y de las parálisis de los pares craneales III, IV y VI.
+# Oculomotor · Cranial Nerve Simulator
 
-- Rostro 3D que sigue un objetivo (ratón o dedo con la cámara).
-- Anatomía de ambas órbitas: músculos y nervios que se pueden separar.
-- Casos clínicos y algoritmo de diplopía, con casos propios.
-- Selector de idioma español/inglés, con preferencia guardada en el navegador.
+A web-based simulator of ocular motility and cranial nerve palsies involving cranial nerves III, IV, and VI.
 
-Abrir `index.html` o `oculomotor/index.html` en el navegador. No necesita instalación. La cámara requiere HTTPS (GitHub Pages o Cloudflare).
+## Features
 
-Uso educativo. No es una herramienta de diagnóstico.
+- **Interactive 3D face:** Follows a target using the mouse or finger tracking through the camera.
+- **Orbital anatomy:** Explore both orbits, with individually isolatable extraocular muscles and nerves.
+- **Clinical cases:** Includes clinical scenarios and a diplopia diagnostic algorithm, with support for custom cases.
+- **Bilingual interface:** Switch between Spanish and English. The selected language is saved in the browser.
 
-## Créditos de terceros
+## Getting Started
 
-- **Rostro:** escaneo 3D «Infinite» de Lee Perry-Smith, de Infinite Realities. Licencia [Creative Commons Atribución 3.0](https://creativecommons.org/licenses/by/3.0/). Se distribuye con los ejemplos de [three.js](https://github.com/mrdoob/three.js). Se modificó: se abrieron los párpados y se ajustó la malla.
-- **three.js:** licencia MIT (se carga desde CDN).
-- **MediaPipe Tasks Vision:** licencia Apache 2.0 (se carga desde CDN).
-- **IBM Plex:** SIL Open Font License (Google Fonts).
+Open `index.html` or `oculomotor/index.html` in your browser. No installation is required.
 
-## Licencia
+**Note:** Camera access requires HTTPS, such as through GitHub Pages or Cloudflare. The 3D graphics and camera features load external libraries from the internet.
 
-El código y los contenidos propios se publican con licencia **MIT** (archivo `LICENSE`): cualquiera puede usarlos, copiarlos, modificarlos y compartirlos, siempre que conserve el aviso de autoría. El escaneo del rostro conserva su licencia CC BY 3.0 y siempre debe acreditarse a Lee Perry-Smith.
+For educational use only. This is not a diagnostic tool.
 
-## Cómo usarlo
+## Third-Party Credits
 
-- **En línea:** abre el enlace del sitio publicado.
-- **Sin internet para el simulador base:** descarga el repositorio (botón verde **Code → Download ZIP**), descomprímelo y abre `oculomotor/index.html`. El 3D y la cámara cargan librerías desde internet.
-- **Para modificarlo:** haz un *fork* del repositorio y edita los archivos.
+- **3D face model:** The “Infinite” 3D scan by Lee Perry-Smith of Infinite Realities. Licensed under [Creative Commons Attribution 3.0 (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/). Distributed with the [three.js examples](https://github.com/mrdoob/three.js). The model was modified by opening the eyelids and adjusting the mesh.
+- **three.js:** [MIT License](https://github.com/mrdoob/three.js/blob/dev/LICENSE).
+- **MediaPipe Tasks Vision:** [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+- **IBM Plex:** [SIL Open Font License](https://openfontlicense.org/), distributed through Google Fonts.
 
-## Código fuente
+## License
 
-La carpeta `fuente/` contiene el código editable. `oculomotor/index.html` se genera a partir de él.
+The original code and content are released under the **MIT License** (see the `LICENSE` file). You may use, copy, modify, and distribute them, provided that the copyright and license notices are retained.
 
-| Archivo | Contenido |
+The 3D face scan remains under the **CC BY 3.0** license and must always be attributed to Lee Perry-Smith.
+
+Third-party assets and libraries remain subject to their respective licenses.
+
+## How to Use
+
+### Online
+
+Open the URL of the published website.
+
+### Run Locally
+
+1. Download the repository by selecting **Code → Download ZIP**.
+2. Extract the downloaded archive.
+3. Open `oculomotor/index.html` in your browser.
+
+The basic simulator can be opened locally, but the 3D graphics and camera features require an internet connection to load external libraries.
+
+### Modify the Project
+
+Fork the repository and edit the source files.
+
+## Source Code Structure
+
+The `fuente/` directory contains the editable source code. The file `oculomotor/index.html` is generated from these sources.
+
+| File or Directory | Description |
 |---|---|
-| `fuente/src/a_head.html` | Estilos (tema «hoja de exploración») |
-| `fuente/src/b_body.html` | Estructura de la página |
-| `fuente/src/c_main.js` | Modelo biomecánico, lesiones, casos, algoritmo de diplopía, cámara |
-| `fuente/src/d_three.js` | Vista 3D (three.js): rostro, órbitas, músculos y nervios |
-| `fuente/src/e_data.js` | Casos clínicos, árbol de diplopía y fichas anatómicas |
-| `fuente/head/` | Procesamiento del rostro 3D (`cut.py`) y su malla (`head.json`) |
-| `fuente/assets/` | Texturas del rostro |
+| `fuente/src/a_head.html` | Styles and examination-sheet theme |
+| `fuente/src/b_body.html` | Page structure |
+| `fuente/src/c_main.js` | Biomechanical model, nerve palsies, clinical cases, diplopia algorithm, and camera |
+| `fuente/src/d_three.js` | Three.js 3D visualization of the face, orbits, muscles, and nerves |
+| `fuente/src/e_data.js` | Clinical cases, diplopia decision tree, and anatomical reference sheets |
+| `fuente/head/` | 3D face processing script (`cut.py`) and mesh (`head.json`) |
+| `fuente/assets/` | Face textures |
 
-Para regenerar la app después de editar: `cd fuente && python build.py` (Python 3, sin dependencias). Para volver a procesar el rostro: `pip install trimesh numpy` y `python head/cut.py LeePerrySmith.glb`.
+## Build Instructions
 
-## Idioma
+To regenerate the application after editing the source files, run:
 
-En la esquina superior derecha del simulador puedes elegir **Español** o **English**. La selección se guarda en `localStorage` y se mantiene al volver a abrir la aplicación.
+```bash
+cd fuente
+python build.py
+```
+
+Requires Python 3. No additional Python dependencies are needed for the build process.
+
+### Reprocess the 3D Face
+
+Install the required dependencies:
+
+```bash
+pip install trimesh numpy
+```
+
+Then run:
+
+```bash
+python head/cut.py LeePerrySmith.glb
+```
+
+Run these commands from the appropriate project directory containing the referenced files.
+
+## Language Settings
+
+Use the language selector in the upper-right corner of the simulator to choose **Español** or **English**. Your preference is stored in the browser's `localStorage` and persists when you reopen the application.
+
+---
+
+**Oculomotor Cranial Nerve Simulator** — an educational resource for exploring ocular motility, extraocular muscle anatomy, cranial nerve palsies, and diplopia.
