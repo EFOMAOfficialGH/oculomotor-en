@@ -359,11 +359,6 @@ function eyeScreen(){ // CSS px in current host
   return out;
 }
 function renderNine(cv,cells){
-  // The 3D nine-position preview performs nine synchronous framebuffer copies
-  // on every gaze-grid refresh. On lower-powered browsers this blocks the main
-  // thread while the simulator is opening. Let c_main.js use its lightweight
-  // 2D fallback instead; the full 3D anatomy remains available in its tab.
-  return false;
   if(!hostKey||mode!=='face')return false;
   const dpr=Math.min(2,devicePixelRatio||1);const W=cv.clientWidth,Hh=cv.clientHeight;if(!W||!Hh)return false;
   if(cv.width!==Math.round(W*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(Hh*dpr);}
@@ -403,13 +398,9 @@ function drawLabels(){
     const w=SIDES[partSide].root.localToWorld(lp.add(Pp.g.position)).project(camA);
     el.style.display='';el.textContent=tr('Lesión','Lesion')+' '+(side==='R'?'RE':'LE');el.style.left=((w.x+1)/2*r.width+6)+'px';el.style.top=((1-w.y)/2*r.height+16)+'px';}
 }
-let lastRender=0;
 function loop(now){
   requestAnimationFrame(loop);
-  if(document.hidden||now-lastRender<33)return;
-  lastRender=now;
-  if(!hostKey||mode!=='anat')return;
-  const h=hosts[hostKey]; if(!h||h.offsetParent===null)return;
+  if(!hostKey)return; const h=hosts[hostKey]; if(!h||h.offsetParent===null)return;
   update(now);
   const cam=mode==='anat'?camA:camF;
   if(mode==='face')frameFace(); else controls.update();
