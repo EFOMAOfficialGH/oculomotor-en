@@ -7,7 +7,45 @@ const MUS=['LR','MR','SR','IR','SO','IO'];
 const SHORT={LR:'RL',MR:'RM',SR:'RS',IR:'RI',SO:'OS',IO:'OI'};
 const NERVE={LR:'n6',MR:'n3',SR:'n3',IR:'n3',SO:'n4',IO:'n3'};
 const T0=15, OBL=0.6, HX=0.15, LIM=50;
-const {CASES,TREE,INFO}=window.OCU_DATA;
+	const {CASES,TREE,INFO}=window.OCU_DATA;
+
+	/* ================= LANGUAGE =================
+	 * The simulator is Spanish-first. Keep the original text as the source of
+	 * truth so switching languages is reversible, including after a rerender.
+	 */
+	const I18N={
+		'Idioma':'Language','Español':'Spanish','Simulador':'Simulator','Anatomía 3D':'3D anatomy','Diagnóstico':'Diagnosis','Secciones':'Sections',
+		'Hoja de exploración · pares craneales III, IV y VI':'Examination sheet · cranial nerves III, IV and VI',
+		'Lesión':'Lesion','por ojo o por síndrome':'by eye or syndrome','Síndrome':'Syndrome','ambos ojos':'both eyes','Lado derecho':'Right side','Lado izquierdo':'Left side','Gravedad':'Severity',
+		'Exploración':'Examination','Mirada':'Gaze','Seguimiento en H':'H-pattern tracking','Detener':'Stop','Posición primaria':'Primary position','Convergencia':'Convergence','Ojo fijador':'Fixating eye','Oclusor (cover test)':'Occluder (cover test)','Sin tapar':'No cover','Tapar OD':'Cover RE','Tapar OI':'Cover LE','Cabeza':'Head','Inclinación':'Tilt','Giro de cara':'Face turn','Postura compensadora':'Compensatory posture','Cabeza recta':'Head straight','Levantar los párpados para ver el ojo (el explorador sostiene el párpado)':'Raise the eyelids to see the eye (the examiner holds the eyelid)',
+		'Inspección':'Inspection','· vista del explorador':'· examiner view','Arrastra sobre el rostro para mover la linterna · el reflejo corneal permite leer Hirschberg':'Drag across the face to move the light · the corneal reflex can be used to read Hirschberg','Activar cámara':'Enable camera','Cámara activa':'Camera active','Ver músculos y nervios en 3D →':'View muscles and nerves in 3D →','Rostro del paciente con ambos ojos':'Patient face with both eyes',
+		'Horizontal':'Horizontal','Vertical':'Vertical','Torsión':'Torsion','Pupilas OD / OI':'Pupils RE / LE','Nueve posiciones diagnósticas':'Nine diagnostic positions','toca una para mirar ahí · desviación en dioptrías prismáticas (Δ)':'tap one to look there · deviation in prism diopters (Δ)','Nueve posiciones de la mirada':'Nine gaze positions','Interpretación':'Interpretation',
+		'Cámara':'Camera','explora con tu dedo':'explore with your finger','Enciende la cámara y mueve tu dedo índice frente a ella: los ojos lo siguen como en la exploración. Acerca el dedo a la cámara para ver la convergencia.':'Turn on the camera and move your index finger in front of it: the eyes follow it as during an examination. Move your finger closer to the camera to see convergence.','Seguir mi dedo':'Follow my finger','Qué detectar':'What to detect','Detectar la mano':'Detect hand','Dedal rojo':'Red fingertip','Amplitud':'Range','Convergencia al acercar el dedo':'Converge when the finger gets closer',
+		'Lo que ve el paciente':'What the patient sees','vidrio rojo en OD':'red glass over RE','Diplopía percibida por el paciente':'Diplopia perceived by the patient',
+		'Frontal':'Front','Superior':'Top','Lateral':'Side','Tronco':'Brainstem','Mover piezas':'Move parts','Color por nervio':'Color by nerve','Descomponer':'Explode','Reensamblar':'Reassemble','Arrastra piezas para separarlas':'Drag parts to separate them','Descomponer el modelo':'Explode the model',
+		'Pieza seleccionada':'Selected part','Toca cualquier estructura':'Touch any structure','Gira con un dedo o el ratón, acerca con pellizco o rueda. Toca un músculo, nervio, núcleo o vaso para ver su origen, inserción, inervación y perla clínica.':'Rotate with one finger or the mouse, zoom with a pinch or wheel. Touch a muscle, nerve, nucleus, or vessel to see its origin, insertion, innervation, and clinical pearl.','Aislar':'Isolate','Ocultar':'Hide','Mostrar todo':'Show all','Capas':'Layers','Etiquetas':'Labels','Ninguna':'None','Clave':'Key','Todas':'All','Movimiento':'Movement','ligado al simulador':'linked to simulator','Arrastra para mover la linterna':'Drag to move the light','arrastra la linterna':'drag the light','Cambiar lesión':'Change lesion',
+		'Caso clínico':'Clinical case','Tres pasos de Parks':'Parks three-step test','Algoritmo de diplopía':'Diplopia algorithm','Mis preguntas':'My questions','Explora al paciente':'Explore the patient','arrastra la linterna':'drag the light','Inclinar cabeza':'Tilt head','Recta':'Straight','Fija':'Fixes','No':'No',
+		'Cómo funciona el modelo.':'How the model works.','Modelo didáctico con parámetros aproximados: no reproduce magnitudes de un paciente real.':'Educational model with approximate parameters: it does not reproduce measurements from a real patient.',
+		'Lesión oculta':'Hidden lesion','Sin lesión':'No lesion','Ninguno':'None','Derecho':'Right','Izquierdo':'Left','der.':'right','izq.':'left'
+	};
+	const originalText=new WeakMap(), originalAttr=new WeakMap();
+	let language='es';
+	function translate(root=document){
+		const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
+		while(n=walker.nextNode()){
+			if(!originalText.has(n))originalText.set(n,n.nodeValue);
+			const base=originalText.get(n).trim(); if(!base)continue;
+			const value=language==='en'?(I18N[base]||base):base;
+			if(n.nodeValue.trim()!==value)n.nodeValue=n.nodeValue.replace(n.nodeValue.trim(),value);
+		}
+		root.querySelectorAll?.('[aria-label],[title]').forEach(el=>{for(const a of ['aria-label','title']){if(!el.hasAttribute(a))continue;if(!originalAttr.has(el))originalAttr.set(el,{...(originalAttr.get(el)||{}),[a]:el.getAttribute(a)});const base=originalAttr.get(el)[a];el.setAttribute(a,language==='en'?(I18N[base]||base):base);}});
+		document.documentElement.lang=language;
+	}
+	function setLanguage(next){language=next==='en'?'en':'es';try{localStorage.setItem('oculo-language',language);}catch(e){};translate();}
+	try{language=localStorage.getItem('oculo-language')==='en'?'en':'es';}catch(e){}
+	const langSelect=$('languageSelect'); if(langSelect){langSelect.value=language;langSelect.addEventListener('change',e=>setLanguage(e.target.value));}
+	translate();
+	new MutationObserver(()=>{translate();}).observe(document.body,{childList:true,subtree:true});
 
 /* ================= ENGINE ================= */
 function action(m,h){

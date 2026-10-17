@@ -5,6 +5,7 @@ Simulador web de la motilidad ocular y de las parálisis de los pares craneales 
 - Rostro 3D que sigue un objetivo (ratón o dedo con la cámara).
 - Anatomía de ambas órbitas: músculos y nervios que se pueden separar.
 - Casos clínicos y algoritmo de diplopía, con casos propios.
+- Selector de idioma español/inglés, con preferencia guardada en el navegador.
 
 Abrir `index.html` o `oculomotor/index.html` en el navegador. No necesita instalación. La cámara requiere HTTPS (GitHub Pages o Cloudflare).
 
@@ -42,3 +43,7 @@ La carpeta `fuente/` contiene el código editable. `oculomotor/index.html` se ge
 | `fuente/assets/` | Texturas del rostro |
 
 Para regenerar la app después de editar: `cd fuente && python build.py` (Python 3, sin dependencias). Para volver a procesar el rostro: `pip install trimesh numpy` y `python head/cut.py LeePerrySmith.glb`.
+
+## Idioma
+
+En la esquina superior derecha del simulador puedes elegir **Español** o **English**. La selección se guarda en `localStorage` y se mantiene al volver a abrir la aplicación.
